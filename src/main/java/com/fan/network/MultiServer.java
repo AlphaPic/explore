@@ -280,14 +280,14 @@ public class MultiServer {
                     if(fileName == null || fileName.isEmpty()) {
                         login = false;
                     }
-                    //写入文件
+                    //write file
                     if(login){
                         String[] filesInfo = fileName.split("\\\\");
                         if(filesInfo.length <= 0){
                             out.println(CodeInfo.ERROR_CODE.getName());
                             return;
                         }
-                        //发回可以传输码，并且处于监听传入对象的状态
+                        //send back transfer code and set the status read
                         out.println(CodeInfo.UPLOAD_STARTED.getName());
                         File file = new File(fileDir + filesInfo[filesInfo.length - 1]);
                         FileOutputStream fos = new FileOutputStream(file);
@@ -298,7 +298,7 @@ public class MultiServer {
                         }
                         System.out.println("upload finished :)");
                         fos.flush();
-                        //写完关闭文件句柄
+                        //close file handle
                         fos.close();
                         out.println(CodeInfo.UPLOAD_FINISHED.getName());
                         return;
