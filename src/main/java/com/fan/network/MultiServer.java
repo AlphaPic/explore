@@ -230,7 +230,7 @@ public class MultiServer {
         }
 
         /**
-         * 处理具体的输入
+         * handle detail input
          * @param str
          */
         private void handleInput(String str) throws Exception{
@@ -273,7 +273,7 @@ public class MultiServer {
                         out.println("upload cmd should like this '[upload token filepath]'");
                         return;
                     }
-                    //判断是不是已经登录
+                    //if user is login.
                     boolean login = isTokenEffient(infoArr[1]);
 
                     String fileName = infoArr[2];
@@ -313,7 +313,7 @@ public class MultiServer {
                         return;
                     }
 
-                    //judge if file exists
+                    //judge if file exists.
                     String fileName1 = fileDir + operation.getFile();
                     File file = new File(fileName1);
                     if(file.exists() == false){
