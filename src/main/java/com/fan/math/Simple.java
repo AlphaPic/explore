@@ -2,6 +2,9 @@ package com.fan.math;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author:fanwenlong
@@ -33,6 +36,26 @@ public class Simple {
                 }
         }
         return null;
+    }
+
+    public boolean hasCycle(ListNode head) {
+
+        if(head == null || head.next == null || head.next.next == null){
+            return false;
+        }
+
+        ListNode fast = head.next.next;
+        ListNode slow = head.next;
+        while (fast != null){
+            if(slow == fast){
+                return true;
+            }
+            if(fast.next != null){
+                fast = fast.next.next;
+            }
+            slow = slow.next;
+        }
+        return false;
     }
 
     //给定两个非空链表来表示两个非负整数。位数按照逆序方式存储，它们的每个节点只存储单个数字。将两数相加返回一个新的链表
@@ -180,8 +203,44 @@ public class Simple {
         return (int) (minor == true ? -val : val);
     }
 
+    public ListNode deleteDuplicates(ListNode head) {
+        if(head == null || head.next == null)
+            return head;
+
+        Set<Integer> set = new HashSet<>();
+        ListNode before = head;
+        ListNode after  = head.next;
+        set.add(head.val);
+        while (after != null){
+            if(set.contains(after.val)){
+                before.next = after.next;
+                after = after.next;
+            }else {
+                set.add(after.val);
+                before = after;
+                after = after.next;
+            }
+        }
+
+        return head;
+    }
+
+    public void printList(ListNode head){
+        if(head == null)
+            return;
+        else {
+            StringBuilder sb1 = new StringBuilder(100);
+            while (head.next != null){
+                sb1.append(head.val).append("->");
+                head = head.next;
+            }
+            sb1.append(head.val);
+            System.out.println(sb1.toString());
+        }
+    }
+
     public static void main(String[] args){
-        int SELECT = 3;
+        int SELECT = 5;
         Simple demo = new Simple();
         switch (SELECT){
             case 1:
@@ -204,21 +263,27 @@ public class Simple {
                 ListNode arr1 = demo.buildListByArr(new int[]{9});
                 ListNode arr2 = demo.buildListByArr(new int[]{1,9,9,9,9,9,9,9,9,9});
                 ListNode node = demo.addTwoNumbers(arr1,arr2);
-                if(node == null)
-                    return;
-                else {
-                    StringBuilder sb1 = new StringBuilder(100);
-                    while (node.next != null){
-                        sb1.append(node.val).append("->");
-                        node = node.next;
-                    }
-                    sb1.append(node.val);
-                    System.out.println(sb1.toString());
-                }
+
                 break;
             case 3:
                 int NUMBER = 1534236469;
                 System.out.println("The reverse of " + NUMBER + " is " + demo.reverse(NUMBER));
+            case 4:
+                ListNode list  = demo.buildListByArr(new int[]{});
+                ListNode list1 = demo.buildListByArr(new int[]{1});
+                ListNode head = list;
+                ListNode tail = list;
+//                while (tail.next != null){
+//                    tail = tail.next;
+//                }
+//                tail.next = head;
+                System.out.println("Has cycle?" + demo.hasCycle(head));
+                break;
+            case 5:
+                ListNode list2 = demo.buildListByArr(new int[]{1,2,3,4,1,2,3,4,5,6});
+                ListNode delete = demo.deleteDuplicates(list2);
+                demo.printList(delete);
+                break;
             default:
                 break;
         }
