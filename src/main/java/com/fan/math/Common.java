@@ -108,9 +108,46 @@ public class Common {
         return head;
     }
 
+    private int getLenOfList(ListNode node){
+        if (node == null)
+            return 0;
+        else {
+            ListNode visit = node;
+            int num = 0;
+            while (visit != null){
+                num++;
+                visit = visit.next;
+            }
+            return num;
+        }
+    }
+
+    public ListNode removeNthFromEnd(ListNode head, int n){
+        if(head == null)
+            return null;
+        int len = getLenOfList(head);
+        if(len < n){
+            System.out.println("Can't delete from list cause length not enough.");
+            return head;
+        }
+        int loc = len - n;
+        if(loc == 0){
+            return head.next;
+        }
+        ListNode delete = head;
+        ListNode before = delete;
+        while (loc > 0){
+            before = delete;
+            delete = delete.next;
+            loc--;
+        }
+        before.next = delete.next;
+        return head;
+    }
+
 
     public static void main(String[] args){
-        int SELECT = 2;
+        int SELECT = 3;
         Common demo = new Common();
         Simple simple = new Simple();
         switch (SELECT){
@@ -123,6 +160,11 @@ public class Common {
                 ListNode list = simple.buildListByArr(new int[]{1,1,1,2,3,4,5,6,7,8,3,4});
                 ListNode head = demo.deleteDuplicates(list);
                 simple.printList(head);
+                break;
+            case 3:
+                ListNode listNode = simple.buildListByArr(new int[]{1,2});
+                ListNode head1    = demo.removeNthFromEnd(listNode,2);
+                simple.printList(head1);
                 break;
             default:
                 break;
