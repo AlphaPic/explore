@@ -124,10 +124,13 @@ public class Hard {
         return tail;
     }
 
+
+
     public static void main(String[] args){
-        int SELECT = 1;
+        int SELECT = 2;
         Simple simple = new Simple();
         Hard demo = new Hard();
+        LRUCache cache = new LRUCache(1);
         switch (SELECT) {
             case 1:
 //                ListNode list1 = simple.buildListByArr(new int[]{1,3,5,7,8});
@@ -147,6 +150,11 @@ public class Hard {
                 System.out.println(sb1.toString());
                 break;
             case 2:
+                cache.put(2,1);
+                cache.get(2);
+                cache.put(3,2);
+                cache.get(2);
+                cache.get(3);
                 break;
             default:
                 break;
