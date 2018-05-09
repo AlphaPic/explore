@@ -17,7 +17,7 @@ public class MethodLock implements Serializable{
 
     private String method_name;
 
-    private String desc;
+    private String description;
 
     private Date update_time;
 
@@ -37,12 +37,12 @@ public class MethodLock implements Serializable{
         this.method_name = method_name;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Date getUpdate_time() {

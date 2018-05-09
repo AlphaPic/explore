@@ -33,4 +33,20 @@ public interface DistributedLockService {
      */
     public boolean release();
 
+    /**
+     * 非阻塞式释放锁
+     * @param key
+     * @param expectedValue
+     * @return
+     */
+    public boolean tryRelease(String key,String expectedValue);
+
+    /**
+     * 非阻塞式获取锁
+     * @param key
+     * @param value
+     * @return
+     */
+    public boolean tryLock(String key,String value);
+
 }

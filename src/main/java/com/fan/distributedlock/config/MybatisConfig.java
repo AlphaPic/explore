@@ -11,6 +11,7 @@ import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -68,6 +69,13 @@ public class MybatisConfig {
         return new JdbcTransactionFactory();
     }
 
+    @Bean
+    public DataSourceTransactionManager getDataSourceTransactionManager(DataSource dataSource){
+        DataSourceTransactionManager manager = new DataSourceTransactionManager();
+        manager.setDataSource(dataSource);
+        return manager;
+    }
+
 
     /** 会话工厂的配置 */
     @Bean
@@ -109,7 +117,7 @@ public class MybatisConfig {
         System.out.println(session.getConnection().isClosed());
 
         MethodNameMapper mapper = session.getMapper(MethodNameMapper.class);
-        System.out.println(mapper.getMethodName("hello").getDesc());
+        System.out.println(mapper.getMethodName("hello").getDescription());
 
     }
 }

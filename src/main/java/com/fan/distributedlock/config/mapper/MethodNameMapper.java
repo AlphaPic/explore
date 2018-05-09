@@ -44,6 +44,6 @@ public interface MethodNameMapper {
      * @param methodName
      * @return
      */
-    @Select("select from methodLock where method_name = #{methodName} for update")
+    @Select("select * from methodLock where method_name = #{methodName} for update")
     MethodLock selectForALock(@Param("methodName") String methodName);
 }

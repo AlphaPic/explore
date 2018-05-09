@@ -31,4 +31,14 @@ public class ZookeeperDistributedLockServiceImpl implements DistributedLockServi
     public boolean release() {
         return false;
     }
+
+    @Override
+    public boolean tryRelease(String methodName, String expectedValue) {
+        return false;
+    }
+
+    @Override
+    public boolean tryLock(String methodName, String value) {
+        return false;
+    }
 }

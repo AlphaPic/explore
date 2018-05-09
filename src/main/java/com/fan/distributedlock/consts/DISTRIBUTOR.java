@@ -1,4 +1,4 @@
-package com.fan.distributedlock;
+package com.fan.distributedlock.consts;
 
 /**
  * @author:fanwenlong
@@ -11,5 +11,5 @@ package com.fan.distributedlock;
 public enum DISTRIBUTOR {
     DB,
     REDIS,
-    ZOOKEEPER
+    ZOOKEEPER;
 }
