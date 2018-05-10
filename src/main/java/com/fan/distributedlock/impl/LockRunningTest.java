@@ -166,7 +166,7 @@ public class LockRunningTest {
     public static void main(String[] args){
         ApplicationContext context = new AnnotationConfigApplicationContext(ConfigurationScan.class);
         LockRunningTest service = (LockRunningTest) context.getBean("test");
-        Integer SELECT = 4;
+        Integer SELECT = 9;
         switch (SELECT){
             /********************MYSQL*********************/
             case 1://插入方式获取分布式锁
