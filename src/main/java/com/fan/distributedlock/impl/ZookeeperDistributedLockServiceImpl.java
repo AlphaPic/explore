@@ -1,6 +1,16 @@
 package com.fan.distributedlock.impl;
 
+import com.fan.distributedlock.config.ZookeeperConfig;
+import org.apache.log4j.Logger;
+import org.apache.zookeeper.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+
+import static org.apache.zookeeper.CreateMode.EPHEMERAL;
+import static org.apache.zookeeper.ZooKeeper.States.CONNECTED;
 
 /**
  * @author:fanwenlong
@@ -12,18 +22,28 @@ import org.springframework.stereotype.Component;
  */
 @Component("zookeeper")
 public class ZookeeperDistributedLockServiceImpl implements DistributedLockService{
+    private static Logger logger = Logger.getLogger(ZookeeperDistributedLockServiceImpl.class);
+    private final Object lock = new Object();
+    private ZooKeeper zk;
+
+    @Autowired
+    ZookeeperConfig config;
+
     @Override
     public boolean tryLock() {
+        System.out.println("this method do nothing.");
         return false;
     }
 
     @Override
     public boolean tryRelease() {
+        System.out.println("this method do nothing.");
         return false;
     }
 
     @Override
     public boolean lock() {
+
         return false;
     }
 
@@ -32,13 +52,72 @@ public class ZookeeperDistributedLockServiceImpl implements DistributedLockServi
         return false;
     }
 
+    public boolean lock(String uid){
+        synchronized (lock) {
+            String path = null;
+            try {
+                //判断节点是否已经存在
+                if (zk != null) {
+                    byte[] bytes = zk.getData(config.Node, null, null);
+                    String dataString = new String(bytes);
+                    if (uid.equals(dataString)) {
+                        return true;
+                    }
+                }
+                zk = new ZooKeeper(config.host1, config.TimeOut, new Watcher() {
+                    @Override
+                    public void process(WatchedEvent event) {
+                        System.out.println("触发了事件" + event.getType());
+                    }
+                });
+                path = zk.create(config.Node, uid.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, EPHEMERAL);
+            } catch (Exception e) {
+                logger.info(e.getMessage());
+                return false;
+            } finally {
+                if (path == null || path.equals(config.Node) == false){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean release(String uid){
+        synchronized (lock) {
+            if (zk == null) {//节点必须不能为空
+                logger.info("node is empty:(");
+                return false;
+            }
+            if(uid == null || uid.isEmpty()){//传入的值不能为空
+                logger.info("node value can't be empty:(");
+                return false;
+            }
+            try {
+                byte[] bytes = zk.getData(config.Node, null, null);//获取节点存放的数据
+                String value = new String(bytes);
+                if (zk.getState() == CONNECTED && uid.equals(value)){
+                    zk.close();
+                    zk = null;
+                    logger.info("delete successfully:)");
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean tryRelease(String methodName, String expectedValue) {
+        System.out.println("this method do nothing.");
         return false;
     }
 
     @Override
     public boolean tryLock(String methodName, String value) {
+        System.out.println("this method do nothing.");
         return false;
     }
 }

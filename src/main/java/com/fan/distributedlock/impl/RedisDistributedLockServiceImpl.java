@@ -61,11 +61,22 @@ public class RedisDistributedLockServiceImpl implements DistributedLockService{
 
     @Override
     public boolean tryRelease(String key, String expectedValue) {
-        return tryRelease(key,expectedValue,null);
+        return tryRelease(key,expectedValue,"");
     }
 
+    /**
+     * 释放锁
+     * @param key
+     * @param expectedValue
+     * @param templateName
+     * @return
+     */
     public boolean tryRelease(String key, String expectedValue,String templateName){
         RedisTemplate<String,String> template = redisService.getSpecialTemplate((templateName == null || templateName.isEmpty()) ? "template11" : templateName);
+        return tryRelease(key,expectedValue,template);
+    }
+
+    public boolean tryRelease(String key, String expectedValue,RedisTemplate<String,String> template){
         if(template == null){
             return false;
         }
@@ -79,11 +90,15 @@ public class RedisDistributedLockServiceImpl implements DistributedLockService{
 
     @Override
     public boolean tryLock(String key, String value) {
-        return tryLock(key,value,null);
+        return tryLock(key,value,"");
     }
 
     public boolean tryLock(String key, String value,String templateName){
         RedisTemplate<String,String> template = redisService.getSpecialTemplate((templateName == null || templateName.isEmpty()) ? "template11" : templateName);
+        return tryLock(key,value,template);
+    }
+
+    public boolean tryLock(String key, String value,RedisTemplate<String,String> template){
         if(template == null){
             return false;
         }
@@ -95,17 +110,39 @@ public class RedisDistributedLockServiceImpl implements DistributedLockService{
         return false;
     }
 
-    public boolean lockWithMultiServer(){
+    public boolean lockWithMultiServer(String uid){
         int count = redisService.getTemplateCount();
         if(count < 5){
             logger.info("redis cluster num must bigger then 5.");
             return false;
         }
 
-        return false;
+        RedisTemplate<String,String>[] templates = redisService.getAllTemplate();
+        int taken = 0;
+        int total = templates.length;
+        for(RedisTemplate<String,String> redisTemplate : templates){
+            if(taken > total){
+                return true;
+            }
+            boolean res = tryLock("lock",uid,redisTemplate);
+            if(res){
+                taken++;
+            }
+        }
+        if(taken >= (total / 2 + 1)){
+            return true;
+        }else {
+            //如果没有获取到分布式锁则进行释放
+            releaseWithMultiServer(uid);
+            return false;
+        }
     }
 
-    public boolean releaseWithMultiServer(){
+    public boolean releaseWithMultiServer(String uid){
+        RedisTemplate<String,String>[] templates = redisService.getAllTemplate();
+        for(RedisTemplate<String,String> redisTemplate : templates){
+            tryRelease("lock",uid,redisTemplate);
+        }
         return true;
     }
 }

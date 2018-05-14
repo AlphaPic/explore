@@ -39,7 +39,7 @@ public class LockRunningTest {
 
     @Autowired
     @Qualifier("zookeeper")
-    private DistributedLockService zkLock;
+    private ZookeeperDistributedLockServiceImpl zkLock;
 
 
     /**
@@ -141,15 +141,35 @@ public class LockRunningTest {
     /**
      * 使用单个Redis节点实现分布式锁
      */
-    public void lockWithRedisSingleNode(){
-        redisLock.tryLock();
+    public void lockWithRedisSingleNode() throws InterruptedException {
+        boolean lock = redisLock.lock();
+        logger.info("Got lock!!!");
+        if(lock){
+            Thread.sleep(1000);
+            logger.info("Release lock " + (redisLock.release() ? "successful:)" : "failed:("));
+        }
     }
 
     /**
      * 使用多个Redis节点实现分布式锁
      */
     public void lockWithRedisMultiNode(){
+        try {
+            Class clazz = redisLock.getClass();
+            Method lock = clazz.getMethod("lockWithMultiServer", String.class);
+            Method release = clazz.getMethod("releaseWithMultiServer", String.class);
+            String id = ProcessUtil.getRandomProcessId();
 
+            boolean res = (boolean) lock.invoke(redisLock,id);
+            if(res == true){
+                logger.info("Got distributed lock");
+                DoSomethingThatWillCostSomeTime();
+                boolean releaseFlag = (boolean) release.invoke(redisLock,id);
+                logger.info("Release distributed lock " + (releaseFlag ? "successful:)" : "failed:("));
+            }
+        }catch (Exception e){
+            logger.info(e.getMessage());
+        }
     }
 
     /**
@@ -159,14 +179,39 @@ public class LockRunningTest {
 
     }
 
+    /**
+     * 使用zookeeper实现分布式锁
+     */
+    public void lockWithZookeeper(){
+        String id = ProcessUtil.getRandomProcessId();
+
+        boolean res = zkLock.lock(id);
+        if(res){
+            logger.info("Got zk distributed lock!!!");
+            DoSomethingThatWillCostSomeTime();
+            logger.info("Release zk distributed lock " + (zkLock.release(id) ? "successfully:)" : "failed:("));
+        }
+    }
+
+    /**
+     * 做些浪费时间的事情
+     */
+    private void DoSomethingThatWillCostSomeTime(){
+        try{
+            Thread.sleep(3000);
+        }catch (Exception e){
+
+        }
+    }
 
 
 
 
-    public static void main(String[] args){
+
+    public static void main(String[] args) throws InterruptedException {
         ApplicationContext context = new AnnotationConfigApplicationContext(ConfigurationScan.class);
         LockRunningTest service = (LockRunningTest) context.getBean("test");
-        Integer SELECT = 9;
+        Integer SELECT = 7;
         switch (SELECT){
             /********************MYSQL*********************/
             case 1://插入方式获取分布式锁
@@ -188,8 +233,9 @@ public class LockRunningTest {
                 service.lockWithRedisByRedisson();
                 break;
             case 7://使用zk实现分布式锁
+                service.lockWithZookeeper();
                 break;
-            case 8://使用分布式锁的中间件
+            case 8://使用分布式锁的中间件curator
                 break;
             default:
                 logger.info("Unsupported execution!!!");
