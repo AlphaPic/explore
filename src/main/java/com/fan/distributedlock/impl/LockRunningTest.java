@@ -194,6 +194,13 @@ public class LockRunningTest {
     }
 
     /**
+     * 使用curator来实现分布式锁
+     */
+    public void lockWithZookeeperCurator(){
+
+    }
+
+    /**
      * 做些浪费时间的事情
      */
     private void DoSomethingThatWillCostSomeTime(){
@@ -236,6 +243,7 @@ public class LockRunningTest {
                 service.lockWithZookeeper();
                 break;
             case 8://使用分布式锁的中间件curator
+                service.lockWithZookeeperCurator();
                 break;
             default:
                 logger.info("Unsupported execution!!!");
