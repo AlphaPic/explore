@@ -16,6 +16,7 @@ public class MysqlConnectionTest {
 
     static final String USER = "root";
     static final String PASS = "111111";
+    static final String CONSTANT = "";
 
 
     static {
