@@ -48,7 +48,6 @@ public class RedisDistributedLockServiceImpl implements DistributedLockService{
             if(tryLock(lock,value) == true){
                 return true;
             }
-            logger.info("Redis hold lock failed for [" + (5 - count) + "] times");
         }
         return false;
     }

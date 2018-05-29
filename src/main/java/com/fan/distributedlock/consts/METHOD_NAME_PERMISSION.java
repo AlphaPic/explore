@@ -12,6 +12,13 @@ public enum METHOD_NAME_PERMISSION {
     LOCK1("lock1"),
     LOCK2("lock2"),
     LOCK3("lock3"),
+    LOCK4("lock4"),
+    LOCK5("lock5"),
+    LOCK6("lock6"),
+    LOCK7("lock7"),
+    LOCK8("lock8"),
+    LOCK9("lock9"),
+    LOCK10("lock10"),
     LILY("lily");
 
     private String name;

@@ -27,9 +27,9 @@ public class RedisConfig {
     Integer REDIS_MAXWAIT      = 1000;     /** 最长等待时间 */
     Boolean REDIS_TESTONBORROW = true;     /** 未知 */
 
-    String  REDIS_HOST1     = "10.112.2.88";       /** redis主机ip1 */
-    String  REDIS_HOST2     = "10.112.2.63";       /** redis主机ip2 */
-    String  REDIS_HOST3     = "10.112.2.140";      /** redis主机ip3 */
+    String  REDIS_HOST1     = "10.112.6.118";       /** redis主机ip1 */
+    String  REDIS_HOST2     = "10.112.6.120";       /** redis主机ip2 */
+    String  REDIS_HOST3     = "10.112.6.39";      /** redis主机ip3 */
     Integer REDIS_PORT1     = 7000;                /** redis端口1 */
     Integer REDIS_PORT2     = 7001;                /** redis端口2 */
     Integer REDIS_PORT3     = 7002;                /** redis端口3 */

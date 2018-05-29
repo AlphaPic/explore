@@ -31,8 +31,7 @@ public class MybatisConfig {
     private static Logger logger = Logger.getLogger(MybatisConfig.class);
 
     String MYSQL_DRIVER        = "com.mysql.jdbc.Driver";                  /** mysql驱动名称 */
-    String MYSQL_URL           = "jdbc:mysql://10.112.2.17:3306/distributor"; /** mysql驱动url-monitor */
-    String MYSQL_URL_MOVIE     = "jdbc:mysql://10.112.2.17:3306/movie";   /** mysql驱动url-movie */
+    String MYSQL_URL           = "jdbc:mysql://10.112.6.96:3306/distributor"; /** mysql驱动url-monitor */
     String MYSQL_USERNAME      = "root";                                   /** mysql用户名 */
     String MYSQL_PASSWORD      = "xiwang";                                 /** mysql密码 */
 

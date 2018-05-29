@@ -1,6 +1,5 @@
 package com.fan.annotation;
 
-import com.sun.xml.internal.ws.api.ResourceLoader;
 
 /**
  * @author:fanwenlong

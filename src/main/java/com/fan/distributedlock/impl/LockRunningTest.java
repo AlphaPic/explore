@@ -47,38 +47,40 @@ public class LockRunningTest {
      */
     public void lockWithMysqlByInsert(){
         String id = ProcessUtil.getRandomProcessId();
-        System.out.println("-----------------------------Insert lock start-----------------------------");
+        System.out.println("-----------------------------start-----------------------------");
         boolean isTaken = mysqlLock.lock();
         boolean isLost  = false;
-        logger.info("Got it by [" + id + "][" + isTaken + "]");
+        System.out.println("客户端[" + id + "]获取锁" + (isTaken ? "成功" : "失败") + "");
         if(isTaken == true){
+            DoSomethingThatWillCostSomeTime(100);
             isLost = mysqlLock.release();
         }
-        logger.info("Lost it by[" + id + "][" + isLost + "]");
-        System.out.println("-----------------------------Insert lock end-----------------------------");
+        System.out.println("客户端[" + id + "]释放锁" + (isLost ? "成功" : "失败") + "");
+        System.out.println("-----------------------------end-----------------------------");
     }
 
     /**
      * 改进型
      * 通过插入和删除特定的记录来实现基于mysql的数据库分布式锁
      */
-    public void lockWithMysqlByInsertAdvance(){
-        String methodName = "lily";
+    public void lockWithMysqlByInsertAdvance(String lockName){
+        String methodName = lockName;
         String desc       = ProcessUtil.getRandomProcessId();
         Class clazz = mysqlLock.getClass();
         try {
             Method lock     = clazz.getMethod("lockAdvance",String.class,String.class);
             Method release  = clazz.getMethod("releaseAdvance",String.class,String.class);
 
-            System.out.println("---------------[ADVANCE]--------------Insert lock start-----------------------------");
+            System.out.println("-----------------------------start-----------------------------");
             boolean isTaken = (boolean) lock.invoke(mysqlLock,methodName,desc);
-            logger.info("Got it by[" + desc + "][" + isTaken + "]");
+            System.out.println("客户端[" + desc + "]获取锁" + (isTaken ? "成功" : "失败") + "");
             boolean isLost = false;
             if(isTaken){
+                DoSomethingThatWillCostSomeTime(100);
                 isLost = (boolean) release.invoke(mysqlLock,methodName,desc);
             }
-            logger.info("Lost it by[" + desc + "][" + isLost + "]");
-            System.out.println("---------------[ADVANCE]--------------Insert lock end-----------------------------");
+            System.out.println("客户端[" + desc + "]释放锁" + (isLost ? "成功" : "失败") + "");
+            System.out.println("-----------------------------end-----------------------------");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,11 +110,11 @@ public class LockRunningTest {
                 Method release  = clazz.getMethod("releaseWithSelection",String.class);
                 boolean isLocked    = (boolean) lock.invoke(mysqlLock,methodName);
                 boolean isReleased  = false;
-                logger.info("Thread[" + threadId + "],hold lock[" + methodName + "]" + (isLocked == true ? "successfully:)" : "failed :("));
+                System.out.println("Thread[" + threadId + "],hold lock[" + methodName + "]" + (isLocked == true ? "successfully:)" : "failed :("));
                 if(isLocked){
                     Thread.sleep(10000);
                     isReleased = (boolean) release.invoke(mysqlLock,methodName);
-                    logger.info("Thread[" + threadId + "],release lock[" + methodName + "]" + (isReleased == true ? "successfully:)" : "failed :("));
+                    System.out.println("Thread[" + threadId + "],release lock[" + methodName + "]" + (isReleased == true ? "successfully:)" : "failed :("));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -143,10 +145,10 @@ public class LockRunningTest {
      */
     public void lockWithRedisSingleNode() throws InterruptedException {
         boolean lock = redisLock.lock();
-        logger.info("Got lock!!!");
+        System.out.println("获取redis分布式锁[单个节点]" + (lock ? "成功:)" : "失败:("));
         if(lock){
-            Thread.sleep(1000);
-            logger.info("Release lock " + (redisLock.release() ? "successful:)" : "failed:("));
+            DoSomethingThatWillCostSomeTime(20);
+            System.out.println("释放redis分布式锁[多个节点]" + (redisLock.release() ? "成功:)" : "失败:("));
         }
     }
 
@@ -163,7 +165,7 @@ public class LockRunningTest {
             boolean res = (boolean) lock.invoke(redisLock,id);
             if(res == true){
                 logger.info("Got distributed lock");
-                DoSomethingThatWillCostSomeTime();
+                DoSomethingThatWillCostSomeTime(5);
                 boolean releaseFlag = (boolean) release.invoke(redisLock,id);
                 logger.info("Release distributed lock " + (releaseFlag ? "successful:)" : "failed:("));
             }
@@ -188,7 +190,7 @@ public class LockRunningTest {
         boolean res = zkLock.lock(id);
         if(res){
             logger.info("Got zk distributed lock!!!");
-            DoSomethingThatWillCostSomeTime();
+            DoSomethingThatWillCostSomeTime(5);
             logger.info("Release zk distributed lock " + (zkLock.release(id) ? "successfully:)" : "failed:("));
         }
     }
@@ -203,9 +205,9 @@ public class LockRunningTest {
     /**
      * 做些浪费时间的事情
      */
-    private void DoSomethingThatWillCostSomeTime(){
+    private void DoSomethingThatWillCostSomeTime(Integer seconds){
         try{
-            Thread.sleep(3000);
+            Thread.sleep(1000 * seconds);
         }catch (Exception e){
 
         }
@@ -216,16 +218,24 @@ public class LockRunningTest {
 
 
     public static void main(String[] args) throws InterruptedException {
+        if(args.length < 1){
+            System.out.println("参数长度必须大于1");
+            return;
+        }
         ApplicationContext context = new AnnotationConfigApplicationContext(ConfigurationScan.class);
         LockRunningTest service = (LockRunningTest) context.getBean("test");
-        Integer SELECT = 7;
+        Integer SELECT = Integer.valueOf(args[0]);
         switch (SELECT){
             /********************MYSQL*********************/
             case 1://插入方式获取分布式锁
                 service.lockWithMysqlByInsert();
                 break;
             case 2://改进型的插入式方式获取分布式锁
-                service.lockWithMysqlByInsertAdvance();
+                if (args.length != 2){
+                    System.out.println("无法使用拓展的锁，因为传入参数个数小于2");
+                    return;
+                }
+                service.lockWithMysqlByInsertAdvance(args[1]);
                 break;
             case 3://使用select for update 来获取分布式锁(行)
                 service.lineLockWithMysqlBySelectForUpdate();

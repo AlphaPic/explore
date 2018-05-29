@@ -51,10 +51,10 @@ public class MysqlDistributedLockServiceImpl implements DistributedLockService {
             SqlSession session = factory.openSession();
             try {
                 MethodNameMapper mapper = session.getMapper(MethodNameMapper.class);
-                res = mapper.insertMethodName("hello","liliyany");
+                res = mapper.insertMethodName("lock1","lock1");
                 session.commit();
             } catch (Exception e){
-                logger.info(e.getMessage());
+
             }finally {
                 session.close();
                 return res == 1 ? true : false;
@@ -113,7 +113,6 @@ public class MysqlDistributedLockServiceImpl implements DistributedLockService {
 
     @Override
     public boolean lock(){
-        System.out.println("-------------[BASIC]----------------chasing mysql distributed lock start-----------------------------");
         int count = 5;
         while (count-- > 0){
             if(tryLock() == true){
@@ -126,13 +125,12 @@ public class MysqlDistributedLockServiceImpl implements DistributedLockService {
                 e.printStackTrace();
             }
         }
-        System.out.println("-------------[BASIC]----------------chasing mysql distributed lock end-----------------------------");
         return false;
     }
 
     @Override
     public boolean release(){
-        return tryRelease("hello","liliyany");
+        return tryRelease("lock1","lock1");
     }
 
     /**
@@ -140,7 +138,6 @@ public class MysqlDistributedLockServiceImpl implements DistributedLockService {
      * @return
      */
     public boolean lockAdvance(String methodName,String desc){
-        System.out.println("-------------[ADVANCE]----------------chasing mysql distributed lock start-----------------------------");
         int count = 5;
         while (count-- > 0){
             if(tryLock(methodName,desc) == true){
@@ -148,12 +145,11 @@ public class MysqlDistributedLockServiceImpl implements DistributedLockService {
             }
             try {
                 System.out.println("failed for " + (5 - count) + " times.");
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("-------------[ADVANCE]----------------chasing mysql distributed lock end-----------------------------");
         return false;
     }
 
