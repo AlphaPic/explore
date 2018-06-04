@@ -1,5 +1,8 @@
 package com.fan.math;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author:fanwenlong
  * @date:2018-04-23 17:53:51
@@ -127,7 +130,7 @@ public class Hard {
 
 
     public static void main(String[] args){
-        int SELECT = 2;
+        int SELECT = 3;
         Simple simple = new Simple();
         Hard demo = new Hard();
         LRUCache cache = new LRUCache(1);
@@ -156,6 +159,11 @@ public class Hard {
                 cache.get(2);
                 cache.get(3);
                 break;
+            case 3:
+                Map<Integer,String> map = new HashMap<>(2,5.5f);
+                for(int i = 0;i < 100;i++){
+                    map.put(i, String.valueOf(i));
+                }
             default:
                 break;
         }
