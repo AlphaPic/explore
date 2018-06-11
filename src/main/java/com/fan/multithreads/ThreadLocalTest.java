@@ -12,23 +12,20 @@ import java.sql.Time;
  */
 public class ThreadLocalTest {
     public static void main(String[] args){
-        final ThreadLocal threadLocal = new ThreadLocal();
+        final ThreadLocal[] threadLocal = new ThreadLocal[20];
+        for (int i = 0;i < threadLocal.length;i++){
+            threadLocal[i] = new ThreadLocal();
+        }
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                threadLocal.set(12);
-                while (true){
-                    try {
-                        Thread.sleep(100000000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                for(int k = 0;k < 10;k++) {
+                    for (int i = 0;i < threadLocal.length;i++){
+                        threadLocal[i].set(k * (threadLocal.length - i));
                     }
                 }
             }
         }).start();
-        for(int i = 0;i < 10;i++) {
-            threadLocal.set(i);
-            System.out.println(threadLocal.get());
-        }
     }
 }

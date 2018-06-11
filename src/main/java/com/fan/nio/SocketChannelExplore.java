@@ -1,5 +1,8 @@
 package com.fan.nio;
 
+import java.io.IOException;
+import java.nio.channels.Selector;
+
 /**
  * @author:fanwenlong
  * @date:2018-01-18 09:51:55
@@ -11,6 +14,11 @@ package com.fan.nio;
 public class SocketChannelExplore {
 
     public static void main(String[] args){
+        try {
+            Selector selector = Selector.open();
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
