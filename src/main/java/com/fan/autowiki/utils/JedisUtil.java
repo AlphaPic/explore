@@ -1,4 +1,4 @@
-package com.fan.autowiki;
+package com.fan.autowiki.utils;
 
 import redis.clients.jedis.Jedis;
 

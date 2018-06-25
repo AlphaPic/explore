@@ -1,20 +1,12 @@
 package com.fan.autowiki.task;
 
-import com.fan.autowiki.GitVo;
 import com.fan.autowiki.InitFailedException;
-import com.fan.autowiki.JedisUtil;
+import com.fan.autowiki.utils.JedisUtil;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryBuilder;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import redis.clients.jedis.Jedis;
 
 import java.io.File;
-import java.util.Collection;
 
 /**
  * @author:fanwenlong
@@ -66,8 +58,10 @@ public class GitTask implements Runnable{
      */
     @Override
     public void run() {
-        while (true){
-
+        try {
+            load();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -111,6 +105,8 @@ public class GitTask implements Runnable{
     //策略1，判断过去5分钟是否已经执行
     private boolean executedInLast5Minute() {
         String val = JedisUtil.getStringValue("LAST-5-MINUTE");
+        if(val == null)
+            return false;
         Long lastExecTime = Long.parseLong(val);
         Long curTime      = System.currentTimeMillis();
         if(curTime - lastExecTime > (5 * 60 * 1000)){

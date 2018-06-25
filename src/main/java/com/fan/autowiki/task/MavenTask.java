@@ -29,8 +29,5 @@ public class MavenTask implements Runnable{
 
     @Override
     public void run() {
-        while (true){
-
-        }
     }
 }

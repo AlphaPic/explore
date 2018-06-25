@@ -1,6 +1,4 @@
-package com.fan.autowiki;
-
-import com.fan.autowiki.task.TASKTYPE;
+package com.fan.autowiki.task;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -15,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * @detail:
  */
 public class ScheduleTaskThreadPoolExecutor {
-    ScheduledExecutorService executorService;
+    static ScheduledExecutorService executorService;
 
     private ScheduleTaskThreadPoolExecutor(ScheduledExecutorService service){}
 
@@ -27,7 +25,7 @@ public class ScheduleTaskThreadPoolExecutor {
      * 增加定时任务
      * @param runnable
      */
-    public boolean addTask(Runnable runnable,TASKTYPE tasktype){
+    public static boolean addTask(Runnable runnable,TASKTYPE tasktype){
         if (executorService == null){
             System.out.println("定时任务执行线程池为空.");
             return false;
@@ -40,7 +38,7 @@ public class ScheduleTaskThreadPoolExecutor {
                 executorService.schedule(runnable,100, TimeUnit.SECONDS);
                 break;
             default:
-                System.out.println("不支持的任务");
+                System.out.println("不支持的任务类型");
                 return false;
         }
         return true;
